@@ -74,6 +74,50 @@ optional<float> MedianFilter::new_value(float value) {
   return {};
 }
 
+// OneEuroFilter
+OneEuroFilter::OneEuroFilter(float frequency, float min_cutoff, float cutoff_slope, float derivative_cutoff)
+    : frequency_(frequency), min_cutoff_(min_cutoff), cutoff_slope_(cutoff_slope), derivative_cutoff_(derivative_cutoff) {}
+void OneEuroFilter::set_frequency(float frequency) { this->frequency_ = frequency; }
+void OneEuroFilter::set_min_cutoff(float min_cutoff) { this->min_cutoff_ = min_cutoff; }
+void OneEuroFilter::set_cutoff_slope(float cutoff_slope) { this->cutoff_slope_ = cutoff_slope; }
+void OneEuroFilter::set_derivative_cutoff(float derivative_cutoff) { this->derivative_cutoff_ = derivative_cutoff; }
+optional<float> OneEuroFilter::new_value(float value) {
+  //TODO: Implement filter
+  ESP_LOGVV(TAG, "OneEuroFilter(%p)::new_value(%f), frequency:%f, min_cutoff:%f, cutoff_slope:%f, derivative_cutoff:%f", this, value, this->frequency_, this->min_cutoff_, this->cutoff_slope_, this->derivative_cutoff_);
+  return {};
+}
+float OneEuroFilter::alpha(float cutoff) {
+  float tau = 1.0 / (2 * M_PI * cutoff);
+  float te = 1.0 / freq;
+  return 1.0 / (1.0 + (tau / te) );
+}
+OneEuroFilter::LowPassFilter(float alpha, float initial_value)
+    : initialized_(false), alpha_(alpha),  {
+
+}
+float OneEuroFilter::LowPassFilter::filter(float value) {
+  float result;
+  this->lastRawValue_ = value;
+	if (!this->initialized_) {
+    result = value;
+    this->initialized_ = true;
+  } else {
+    result = this->alpha_ * value + (1.0 - this->alpha_) * this->s_;
+  }
+  this->s_ = result;
+  return result;
+}
+float OneEuroFilter::LowPassFilter::filterWithAlpha(float value, float alpha) {
+  this->alpha_ = alpha;
+  this->filter(value);
+}
+bool OneEuroFilter::LowPassFilter::hasLastRawValue(void) {
+  return this->initialized_;
+}
+float OneEuroFilter::LowPassFilter::lastRawValue(void) {
+  return this->lastRawValue_;
+}
+
 // SkipInitialFilter
 SkipInitialFilter::SkipInitialFilter(size_t num_to_ignore) : num_to_ignore_(num_to_ignore) {}
 optional<float> SkipInitialFilter::new_value(float value) {

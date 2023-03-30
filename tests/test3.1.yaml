@@ -77,6 +77,11 @@ sensor:
       - filter_out: NAN
       - sliding_window_moving_average:
       - exponential_moving_average:
+      - oneeuro:
+          frequency: 2
+          min_cutoff: 5
+          cutoff_slope: 0.1
+          derivative_cutoff: 1.0
       - quantile:
           window_size: 5
           send_every: 5
@@ -352,7 +357,6 @@ switch:
               body: Some data
               verify_ssl: false
 
-
 custom_component:
   lambda: |-
     auto s = new CustomComponent();
@@ -541,7 +545,6 @@ mcp23017:
 mcp23008:
   id: mcp23008_hub
 
-
 light:
   - platform: hbridge
     name: Icicle Lights
@@ -561,7 +564,6 @@ ttp229_bsf:
   sdo_pin: D2
   scl_pin: D1
 
-
 display:
   - platform: max7219digit
     cs_pin: GPIO15
@@ -572,7 +574,6 @@ display:
     id: my_matrix
     lambda: |-
       it.printdigit("hello");
-
 
 http_request:
   useragent: esphome/device
