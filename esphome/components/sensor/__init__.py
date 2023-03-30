@@ -10,12 +10,16 @@ from esphome.const import (
     CONF_ACCURACY_DECIMALS,
     CONF_ALPHA,
     CONF_BELOW,
+    CONF_CUTOFF_SLOPE,
+    CONF_DERIVATIVE_CUTOFF,
     CONF_ENTITY_CATEGORY,
     CONF_EXPIRE_AFTER,
     CONF_FILTERS,
+    CONF_FREQUENCY,
     CONF_FROM,
     CONF_ICON,
     CONF_ID,
+    CONF_MIN_CUTOFF,
     CONF_ON_RAW_VALUE,
     CONF_ON_VALUE,
     CONF_ON_VALUE_RANGE,
@@ -192,6 +196,7 @@ SensorPublishAction = sensor_ns.class_("SensorPublishAction", automation.Action)
 
 # Filters
 Filter = sensor_ns.class_("Filter")
+OneEuroFilter = sensor_ns.class_("OneEuroFilter", Filter)
 QuantileFilter = sensor_ns.class_("QuantileFilter", Filter)
 MedianFilter = sensor_ns.class_("MedianFilter", Filter)
 MinFilter = sensor_ns.class_("MinFilter", Filter)
@@ -305,6 +310,29 @@ async def multiply_filter_to_code(config, filter_id):
 @FILTER_REGISTRY.register("filter_out", FilterOutValueFilter, cv.float_)
 async def filter_out_filter_to_code(config, filter_id):
     return cg.new_Pvariable(filter_id, config)
+
+
+ONEEURO_SCHEMA = cv.All(
+    cv.Schema(
+        {
+            cv.Optional(CONF_FREQUENCY, default=1.0): cv.positive_float,
+            cv.Optional(CONF_MIN_CUTOFF, default=1.0): cv.positive_float,
+            cv.Optional(CONF_CUTOFF_SLOPE, default=0.0): cv.float,
+            cv.Optional(CONF_DERIVATIVE_CUTOFF, default=1.0): cv.positive_float,
+        }
+    )
+)
+
+
+@FILTER_REGISTRY.register("1euro", OneEuroFilter, ONEEURO_SCHEMA)
+async def oneeuro_filter_to_code(config, filter_id):
+    return cg.new_Pvariable(
+        filter_id,
+        config[CONF_FREQUENCY],
+        config[CONF_MIN_CUTOFF],
+        config[CONF_CUTOFF_SLOPE],
+        config[CONF_DERIVATIVE_CUTOFF],
+    )
 
 
 QUANTILE_SCHEMA = cv.All(

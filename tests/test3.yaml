@@ -411,6 +411,11 @@ sensor:
       - filter_out: NAN
       - sliding_window_moving_average:
       - exponential_moving_average:
+      - 1euro:
+          frequency: 2
+          min_cutoff: 5
+          cutoff_slope: 0.1
+          derivative_cutoff: 1.0
       - quantile:
           window_size: 5
           send_every: 5
