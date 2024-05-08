@@ -356,7 +356,7 @@ ONEEURO_SCHEMA = cv.All(
 )
 
 
-@FILTER_REGISTRY.register("oneeuro", OneEuroFilter, ONEEURO_SCHEMA)
+@FILTER_REGISTRY.register("1euro", OneEuroFilter, ONEEURO_SCHEMA)
 async def oneeuro_filter_to_code(config, filter_id):
     return cg.new_Pvariable(
         filter_id,

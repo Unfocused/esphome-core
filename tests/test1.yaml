@@ -524,6 +524,11 @@ sensor:
           alpha: 0.1
           send_every: 15
           send_first_at: 15
+      - 1euro:
+          frequency: 2
+          min_cutoff: 5
+          cutoff_slope: 0.1
+          derivative_cutoff: 1.0
       - throttle_average: 60s
       - throttle: 1s
       - heartbeat: 5s
