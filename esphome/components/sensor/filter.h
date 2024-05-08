@@ -43,6 +43,53 @@ class Filter {
   Sensor *parent_{nullptr};
 };
 
+/** OneEuro filter.
+ *
+ * TODO: Document
+ *
+*/
+class OneEuroFilter : public Filter {
+ public:
+  /** Construct a OneEuroFilter*
+   *
+   * TODO: Document parameters
+   * @param frequency
+   * @param min_cutoff
+   * @param cutoff_slope
+   * @param derivative_cutoff
+   */
+  explicit OneEuroFilter(float frequency, float min_cutoff, float cutoff_slope, float derivative_cutoff);
+
+  optional<float> new_value(float value) override;
+  void set_frequency(float frequency)
+  void set_min_cutoff(float min_cutoff);
+  void set_cutoff_slope(float cutoff_slope);
+  void set_derivative_cutoff(float derivative_cutoff);
+
+ protected:
+  std::deque<float> queue_;
+  float frequency_
+  float min_cutoff_;
+  float cutoff_slope_;
+  float derivative_cutoff_;
+
+  class LowPassFilter {
+   public:
+    explicit LowPassFilter(float alpha, float initial_value = 0.0);
+    float filter(float value);
+    float filterWithAlpha(float value, float alpha);
+    bool hasLastRawValue(void);
+    float lastRawValue(void);
+   protected:
+     bool initialized_;
+     float alpha_;
+     float hatxprev_;
+     float xprev_;
+  }
+
+  float alpha(float cutoff);
+}
+
 /** Simple quantile filter.
  *
  * Takes the quantile of the last <send_every> values and pushes it out every <send_every>.
